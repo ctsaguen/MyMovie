@@ -1,24 +1,62 @@
 import React from 'react'
 import { StyleSheet, ScrollView, Text, Image, TouchableOpacity } from 'react-native'
-import { getImageFromApi } from '../API/TMDBApi'
+import { getFilmDetailFromApi, getImageFromApi } from '../API/TMDBApi'
 import { connect } from 'react-redux'
 import numeral from 'numeral'
 import FadeIn from '../Animation/FadeIn'
 import EnlargeShrink from '../Animation/EnlargeShrink'
 
 class FilmDetail extends React.Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      film: undefined,
+      isLoading: false
+    }
+
+    this._toggleFavorite = this._toggleFavorite.bind(this)
+  }
+
+  _updateNavigationParams() {
+    this.props.navigation.setParams({
+      film: this.state.film
+    })
+  }
+
+   componentDidMount() {
+    const favoriteFilmIndex = this.props.favoritesFilm.findIndex(item => item.id === this.props.navigation.state.params.film.id)
+    if (favoriteFilmIndex !== -1) {
+      this.setState({
+        film: this.props.favoritesFilm[favoriteFilmIndex]
+      }, () => { this._updateNavigationParams() })
+      return
+    }
+    this.setState({ isLoading: true })
+    getFilmDetailFromApi(this.props.navigation.state.params.film.id).then(data => {
+      this.setState({
+        film: data,
+        isLoading: false
+      }, () => { this._updateNavigationParams() })
+    })
+  }
+
   _toggleFavorite() {
-    const action = { type: "TOGGLE_FAVORITE", value: this.props.navigation.state.params.film.id }
+    const action = { type: "TOGGLE_FAVORITE", value: this.props.navigation.state.params.film}
     this.props.dispatch(action)
   }
 
   _displayFavoriteImage() {
-    var shouldEnlarge = false
-    var sourceImage = require('../Image/15187654148852_ic_favorite_border.png')
-    if (this.props.favoritesFilm.findIndex(item => item === this.props.navigation.state.params.film.id) != -1) {
+    var shouldEnlarge
+    var sourceImage
+    if (this.props.favoritesFilm.findIndex(item => item.id === this.props.navigation.state.params.film.id) !== -1) {
       // Film dans nos favoris
       shouldEnlarge = true
-      sourceImage = require('../Image/15187653912696_ic_favorite.png')
+      sourceImage = require('../Image/ic_favorite.png')
+    }
+    else{
+      shouldEnlarge = false
+      sourceImage = require('../Image/ic_favorite_border.png')
     }
     return (
       <EnlargeShrink shouldEnlarge={shouldEnlarge}>

@@ -5,15 +5,16 @@ import { connect } from 'react-redux'
 import FadeIn from '../Animation/FadeIn'
 class FilmItem extends React.Component {
   _toggleFavorite() {
-    const action = { type: "TOGGLE_FAVORITE", value: this.props.film.id }
+    const action = { type: "TOGGLE_FAVORITE", value: this.props.film }
     this.props.dispatch(action)
   }
   _displayFavoriteImage() {
-    var sourceImage = require('../Image/15187654148852_ic_favorite_border.png')
-    if (this.props.favoritesFilm.findIndex(item => item === this.props.film.id) != -1) {
+    var sourceImage = require('../Image/ic_favorite_border.png')
+    if (this.props.isFilmFavorite) {
       // Film dans nos favoris
-      sourceImage = require('../Image/15187653912696_ic_favorite.png')
+      sourceImage = require('../Image/ic_favorite.png')
     }
+   
     return (
       <Image
         style={styles.favorite_image}
@@ -22,8 +23,7 @@ class FilmItem extends React.Component {
     )
   }
   render() {
-    const film = this.props.film
-    const displayDetailForFilm = this.props.displayDetailForFilm
+    const { film, displayDetailForFilm } = this.props
     return (
       <FadeIn>
         <TouchableOpacity onPress={() => displayDetailForFilm(film)} style={styles.main_container}>
