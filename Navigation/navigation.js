@@ -11,13 +11,24 @@ const SearchStackNavigator = createStackNavigator({
   Search: { // Ici j'ai appelé la vue "Search" mais on peut mettre ce que l'on veut. C'est le nom qu'on utilisera pour appeler cette vue
     screen: Search,
     navigationOptions: {
-      title: 'Rechercher'
+      title: 'Recherche',
+      headerStyle: {
+        backgroundColor: '#000000',
+        height : 100
+      }
     }
   },
   FilmDetails: {
     screen: FilmDetails,
     navigationOptions: {
-      title: 'Details'
+      title: 'Details',
+      headerStyle: {
+        backgroundColor: '#000000'
+      },
+      headerTitleStyle: {
+        color : '#ffff',
+        fontWeight: 'bold',
+      }
     }
   }
 })
@@ -26,13 +37,27 @@ const FavoritesStackNavigator = createStackNavigator({
   Favorites: {
     screen: Favorites,
     navigationOptions: {
-      title: 'Favorites'
+      title: 'Favorites',
+      headerStyle: {
+        backgroundColor: '#000000'
+      },
+      headerTitleStyle: {
+        color : '#ffff',
+        fontWeight: 'bold',
+      }
     }
   },
   FilmDetails: {
     screen: FilmDetails,
     navigationOptions: {
-      title: 'Details'
+      title: 'Details',
+      headerStyle: {
+        backgroundColor: '#000000'
+      },
+      headerTitleStyle: {
+        color : '#ffff',
+        fontWeight: 'bold',
+      }
     }
   }
 })
