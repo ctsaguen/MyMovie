@@ -25,6 +25,7 @@ class FilmList extends React.Component {
           data={this.props.films}
           extraData={this.props.favoritesFilm}
           keyExtractor={(item) => item.id.toString()}
+          numColumns={1}
           renderItem={({item}) => (
             <FilmItem
               film={item}

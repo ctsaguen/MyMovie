@@ -13,8 +13,12 @@ const SearchStackNavigator = createStackNavigator({
     navigationOptions: {
       title: 'Recherche',
       headerStyle: {
-        backgroundColor: '#000000',
+        backgroundColor: '#fff',
         height : 100
+      },
+      headerTitleStyle: {
+        color : '#ffff',
+        fontWeight: 'bold',
       }
     }
   },
@@ -23,10 +27,10 @@ const SearchStackNavigator = createStackNavigator({
     navigationOptions: {
       title: 'Details',
       headerStyle: {
-        backgroundColor: '#000000'
+        backgroundColor: '#fff'
       },
       headerTitleStyle: {
-        color : '#ffff',
+        color : 'black',
         fontWeight: 'bold',
       }
     }
@@ -39,10 +43,10 @@ const FavoritesStackNavigator = createStackNavigator({
     navigationOptions: {
       title: 'Favorites',
       headerStyle: {
-        backgroundColor: '#000000'
+        backgroundColor: '#fff'
       },
       headerTitleStyle: {
-        color : '#ffff',
+        color : 'black',
         fontWeight: 'bold',
       }
     }
@@ -52,10 +56,10 @@ const FavoritesStackNavigator = createStackNavigator({
     navigationOptions: {
       title: 'Details',
       headerStyle: {
-        backgroundColor: '#000000'
+        backgroundColor: '#fff'
       },
       headerTitleStyle: {
-        color : '#ffff',
+        color : 'black',
         fontWeight: 'bold',
       }
     }

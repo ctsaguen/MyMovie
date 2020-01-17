@@ -1,7 +1,7 @@
 // Components/Search.js
 
 import React from 'react'
-import { StyleSheet, View, TextInput,Image, ActivityIndicator,Dimensions } from 'react-native'
+import { StyleSheet, View, TextInput, Image, ActivityIndicator, Dimensions, ImageBackground } from 'react-native'
 import FilmList from './FilmList'
 import { getFilmsFromApiWithSearchedText } from '../API/TMDBApi'
 
@@ -11,30 +11,30 @@ class Search extends React.Component {
     static navigationOptions = ({ navigation }) => {
         const { params } = navigation.state
         return {
-            headerRight: () =>(<View style={{flexDirection: 'row'}}>
+            headerRight: () => (<View style={{ flexDirection: 'row' }}>
                 <Image
-            source={require('../Image/icons8-search.png')}
-            style={styles.ImageStyle}
-          />
+                    source={require('../Image/icons8-search.png')}
+                    style={styles.ImageStyle}
+                />
                 <TextInput
-                style={styles.search}
-                clearButtonMode='while-editing'
-                placeholder='Recherche'
-                placeholderTextColor='#ffff'
-                onChangeText={(text) => params._searchTextInputChanged(text)}
-                onSubmitEditing={() => params._loadFilms()}
-            />
+                    style={styles.search}
+                    clearButtonMode='while-editing'
+                    placeholder='Recherche'
+                    placeholderTextColor='#ffff'
+                    onChangeText={(text) => params._searchTextInputChanged(text)}
+                    onSubmitEditing={() => params._loadFilms()}
+                />
             </View>)
-            
-        }
-      }
 
-      componentDidMount(){
+        }
+    }
+
+    componentDidMount() {
         this.props.navigation.setParams({
             _searchTextInputChanged: this._searchTextInputChanged,
             _loadFilms: this._loadFilms
         })
-      }
+    }
 
     constructor(props) {
         super(props)
@@ -62,7 +62,7 @@ class Search extends React.Component {
     _displayLoading() {
         if (this.state.isLoading) {
             return (
-                
+
                 <View style={styles.loading_container}>
                     <ActivityIndicator size='large' />
                     {/* Le component ActivityIndicator possède une propriété size pour définir la taille du visuel de chargement : small ou large. Par défaut size vaut small, on met donc large pour que le chargement soit bien visible */}
@@ -82,13 +82,15 @@ class Search extends React.Component {
     render() {
 
         return (
-            <View style={styles.main_container}>
-                <FilmList
-                    films={this.state.films} // C'est bien le component Search qui récupère les films depuis l'API et on les transmet ici pour que le component FilmList les affiche
-                    navigation={this.props.navigation} // Ici on transmet les informations de navigation pour permettre au component FilmList de naviguer vers le détail d'un film
-                />
-                {this._displayLoading()}
-            </View>
+            <ImageBackground source={require('../Image/back.jpg')} style={{ width: '100%', height: '100%' }}>
+                <View style={styles.main_container}>
+                    <FilmList
+                        films={this.state.films} // C'est bien le component Search qui récupère les films depuis l'API et on les transmet ici pour que le component FilmList les affiche
+                        navigation={this.props.navigation} // Ici on transmet les informations de navigation pour permettre au component FilmList de naviguer vers le détail d'un film
+                    />
+                    {this._displayLoading()}
+                </View>
+            </ImageBackground>
         )
     }
 }
@@ -100,12 +102,12 @@ const styles = StyleSheet.create({
     search: {
         width: WIDTH - 40,
         height: 40,
-        backgroundColor: 'rgba(255,255,255, 0.37)',
-        borderRadius : 12,
-        fontSize : 18,
-        color : '#ffff',
-        marginRight : 20,
-        paddingLeft : 33
+        backgroundColor: 'rgba(0,0,0, 0.37)',
+        borderRadius: 12,
+        fontSize: 18,
+        color: 'rgba(255,255,255, 1)',
+        marginRight: 20,
+        paddingLeft: 33
     },
     loading_container: {
         position: 'absolute',
@@ -117,16 +119,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     ImageStyle: {
-        position : "absolute",
-        top : 0,
-        left : 5,
-        marginVertical : 8,
+        position: "absolute",
+        top: 0,
+        left: 5,
+        zIndex : 100,
+        marginVertical: 8,
         marginRight: -10,
         height: 25,
         width: 25,
         resizeMode: 'stretch',
         alignItems: 'center',
-      }
+    }
 })
 
 export default Search

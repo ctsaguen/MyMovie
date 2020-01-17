@@ -1,8 +1,7 @@
 import React from 'react'
-import { StyleSheet, ScrollView, Text, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, Image, TouchableOpacity, ImageBackground, Animated} from 'react-native'
 import { getFilmDetailFromApi, getImageFromApi } from '../API/TMDBApi'
 import { connect } from 'react-redux'
-import numeral from 'numeral'
 import FadeIn from '../Animation/FadeIn'
 import EnlargeShrink from '../Animation/EnlargeShrink'
 
@@ -12,7 +11,8 @@ class FilmDetail extends React.Component {
     super(props)
     this.state = {
       film: undefined,
-      isLoading: false
+      isLoading: false,
+      scrollOffset: new Animated.Value(0)
     }
 
     this._toggleFavorite = this._toggleFavorite.bind(this)
@@ -24,7 +24,7 @@ class FilmDetail extends React.Component {
     })
   }
 
-   componentDidMount() {
+  componentDidMount() {
     const favoriteFilmIndex = this.props.favoritesFilm.findIndex(item => item.id === this.props.navigation.state.params.film.id)
     if (favoriteFilmIndex !== -1) {
       this.setState({
@@ -42,7 +42,7 @@ class FilmDetail extends React.Component {
   }
 
   _toggleFavorite() {
-    const action = { type: "TOGGLE_FAVORITE", value: this.props.navigation.state.params.film}
+    const action = { type: "TOGGLE_FAVORITE", value: this.props.navigation.state.params.film }
     this.props.dispatch(action)
   }
 
@@ -54,7 +54,7 @@ class FilmDetail extends React.Component {
       shouldEnlarge = true
       sourceImage = require('../Image/ic_favorite.png')
     }
-    else{
+    else {
       shouldEnlarge = false
       sourceImage = require('../Image/ic_favorite_border.png')
     }
@@ -69,27 +69,59 @@ class FilmDetail extends React.Component {
   }
 
   render() {
-    return (
+    const { scrollOffset } = this.state;
+    const scrollEvent = Animated.event(
+      [{ nativeEvent: { contentOffset: { y: this.state.scrollOffset } } }],
+      { useNativeDriver: true }
+    );
+    const expandedHeaderHeight = 400;
+    const collapsedHeaderHeight = 250;
+    const scrollSpan = expandedHeaderHeight - collapsedHeaderHeight;
 
-      <ScrollView style={styles.main_container}>
-        <FadeIn>
-          <Image
-            style={styles.image}
-            source={{ uri: getImageFromApi(this.props.navigation.state.params.film.poster_path) }}
-          />
-          <Text style={styles.title_text}>{this.props.navigation.state.params.film.title}</Text>
-          <TouchableOpacity
-            style={styles.favorite_container}
-            onPress={() => this._toggleFavorite()}>
-            {this._displayFavoriteImage()}
-          </TouchableOpacity>
-          <Text style={styles.description}>{this.props.navigation.state.params.film.overview}</Text>
-          <Text>Sortie le {this.props.navigation.state.params.film.release_date}</Text>
-          <Text>Note : {this.props.navigation.state.params.film.vote_average}/10</Text>
-          <Text>Nombre de vote : {this.props.navigation.state.params.film.vote_count}</Text>
-          <Text>Budget : {numeral(this.props.navigation.state.params.film.budget).format('0,0[.]00 $')}</Text>
-        </FadeIn>
-      </ScrollView>
+    return (
+      <ImageBackground source={require('../Image/back.jpg')} style={{ width: '100%', height: '100%' }}>
+        <Animated.ScrollView
+          onScroll={scrollEvent}
+          scrollEventThrottle={1}
+          style={styles.main_container}>
+          <FadeIn>
+            <Animated.View style={{
+              height: expandedHeaderHeight,
+              overflow: "hidden",
+              // Déplacement de l'entête dans la direction opposée au défilement
+              transform: [
+                {
+                  translateY: Animated.subtract(
+                    scrollOffset,
+                    scrollOffset.interpolate({
+                      inputRange: [0, scrollSpan],
+                      outputRange: [0, scrollSpan],
+                      extrapolate: "clamp",
+                    })
+                  ),
+                },
+              ],
+              // zIndex est utilisé pour que l'entête soit toujours au dessus du contenu
+              zIndex: 100,
+            }}>
+              <Animated.Image
+                style={styles.image}
+                source={{ uri: getImageFromApi(this.props.navigation.state.params.film.poster_path) }}
+              />
+            </Animated.View>
+            <Text style={styles.title_text}>{this.props.navigation.state.params.film.title}</Text>
+            <TouchableOpacity
+              style={styles.favorite_container}
+              onPress={() => this._toggleFavorite()}>
+              {this._displayFavoriteImage()}
+            </TouchableOpacity>
+            <Text style={styles.description}>{this.props.navigation.state.params.film.overview}</Text>
+            <Text style={{ color: '#fff', fontSize: 16 }}>Sortie le {this.props.navigation.state.params.film.release_date}</Text>
+            <Text style={{ color: '#fff', fontSize: 16 }}>Note : {this.props.navigation.state.params.film.vote_average}/10</Text>
+            <Text style={{ color: '#fff', fontSize: 16 }}>Nombre de vote : {this.props.navigation.state.params.film.vote_count}</Text>
+          </FadeIn>
+        </Animated.ScrollView>
+      </ImageBackground>
     )
   }
 }
@@ -97,6 +129,7 @@ class FilmDetail extends React.Component {
 const styles = StyleSheet.create({
   main_container: {
     flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.2)'
   },
   favorite_image: {
     flex: 1,
@@ -105,15 +138,15 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
-    height: 200,
     backgroundColor: 'gray'
   },
   favorite_container: {
     alignItems: 'center', // Alignement des components enfants sur l'axe secondaire, X ici
   },
   description: {
-    fontStyle: 'italic',
-    color: '#666666',
+    fontStyle: 'normal',
+    color: '#fff',
+    fontSize: 16,
     margin: 5,
     marginBottom: 15
   },
@@ -126,11 +159,8 @@ const styles = StyleSheet.create({
     marginRight: 5,
     marginTop: 10,
     marginBottom: 10,
-    color: '#000000',
+    color: '#fff',
     textAlign: 'center'
-  },
-  share_touchable_headerrightbutton: {
-    marginRight: 8
   }
 })
 
